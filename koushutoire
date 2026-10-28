@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>内灘町 Leaflet入門マップ</title>
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    body { margin: 0; }
+    #map { width: 100vw; height: 100vh; }
+    .red-pin { color:#fff; background:#b44848; border:3px solid #fff;
+      width:24px; height:24px; border-radius:50% 50% 50% 0;
+      transform:rotate(-45deg); box-shadow:0 2px 7px #0005; }
+    .toilet-pin { color:#fff; background:#2b7bb9; border:2px solid #fff;
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:bold; font-family:sans-serif;
+      box-shadow:0 2px 7px #0005; }
+    .leaflet-popup-content { font-size:13px; line-height:1.6; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([36.657, 136.648], 13);
+
+    const osm = L.tileLayer(
+      'https://tile.openstreetmap.jp/{z}/{x}/{y}.png',
+      { attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>' }
+    ).addTo(map);
+
+    const station = L.marker([36.633524, 136.633933])
+      .bindPopup('<b>内灘駅</b><br>北陸鉄道浅野川線の駅です。');
+
+    const redIcon = L.divIcon({
+      className:'', html:'<div class="red-pin"></div>',
+      iconSize:[24,24], iconAnchor:[12,24]
+    });
+    const sunset = L.marker([36.659151, 136.648919], {icon:redIcon})
+      .bindPopup('道の駅内灘サンセットパーク');
+
+    const route = L.polyline([
+      [36.633524,136.633933], [36.659151,136.648919]
+    ], {color:'#196DAC', weight:4});
+
+    const features = L.layerGroup([station, sunset, route]).addTo(map);
+
+    // ===== 公衆トイレ（サンプルデータ：石川県オープンデータより） =====
+    // [名称, 所在地, 設置位置, 緯度, 経度, 男性, 女性, 男女共用,
+    //  バリアフリートイレ数, 車椅子用, 乳幼児用, オストメイト, 利用時間, 利用可能時間特記事項]
+    const toiletData = [
+      ['向粟崎都市緑地', '石川県河北郡内灘町字向粟崎4丁目163番地1', '東側駐車場横', 36.63076, 136.62907, 0, 0, 1, 0, '無', '無', '無', '0:00〜23:59', '24時間利用可。'],
+      ['はまちどり公園', '石川県河北郡内灘町字千鳥台4丁目142番地', '西側入口横', 36.638697, 136.625597, 3, 2, 1, 1, '有', '無', '無', '0:00〜23:59', '24時間利用可。'],
+      ['鶴ケ丘中央公園', '石川県河北郡内灘町字鶴ケ丘5丁目1番地44', '東側入口横', 36.645422, 136.639569, 4, 2, 1, 1, '有', '有', '無', '0:00〜23:59', '24時間利用可。'],
+      ['ハマナス恐竜公園', '石川県河北郡内灘町字ハマナス2丁目185番地', '北西側入口横', 36.655838, 136.64401, 4, 3, 1, 1, '有', '有', '無', '0:00〜23:59', '24時間利用可。'],
+      ['大根布児童公園', '石川県河北郡内灘町字大根布7丁目62番地', '南側入口横', 36.650281, 136.64511, 4, 2, 0, 0, '無', '無', '無', '0:00〜23:59', '24時間利用可。'],
+      ['蓮湖渚公園', '石川県河北郡内灘町字大根布5丁目289番地4', '公園中央', 36.656431, 136.653814, 4, 3, 1, 1, '有', '有', '無', '0:00〜23:59', '24時間利用可。'],
+      ['宮坂ふれあい広場', '石川県河北郡内灘町字宮坂る25番地', '正面入口横', 36.667176, 136.660122, 1, 0, 1, 0, '無', '無', '無', '0:00〜23:59', '24時間利用可。'],
+      ['内灘町総合公園（パークゴルフ場）', '石川県河北郡内灘町字宮坂に459番地', '正面入口横', 36.662993, 136.652504, 6, 4, 1, 1, '有', '有', '有', '0:00〜23:59', '24時間利用可。'],
+      ['内灘町総合公園（テニスコート）', '石川県河北郡内灘町字宮坂に3番地', 'テニスコート東側', 36.664393, 136.653757, 6, 3, 1, 1, '有', '有', '有', '0:00〜23:59', '24時間利用可。冬期閉鎖（12月～2月）。'],
+      ['白帆台第3公園', '石川県河北郡内灘町白帆台2丁目589番地', '東側入口横', 36.673357, 136.658322, 4, 2, 1, 1, '有', '有', '無', '0:00〜23:59', '24時間利用可。'],
+      ['白帆台第4公園', '石川県河北郡内灘町白帆台2丁目590番地', '東側入口横', 36.676496, 136.661243, 4, 2, 1, 1, '有', '有', '無', '0:00〜23:59', '24時間利用可。'],
+      ['室児童公園', '石川県河北郡内灘町字室イ1番地4', '正面入口横', 36.686315, 136.673319, 0, 0, 1, 0, '無', '無', '無', '0:00〜23:59', '24時間利用可。'],
+      ['内灘町霊園', '石川県河北郡内灘町字宮坂ぬ365番地7', '管理棟内', 36.67634, 136.65635, 3, 2, 1, 1, '有', '有', '有', '0:00〜23:59', '24時間利用可。'],
+      ['内灘駅', '石川県河北郡内灘町字アカシア1丁目160番地', '駐輪場横', 36.633524, 136.633933, 3, 2, 1, 1, '有', '無', '無', '0:00〜23:59', '24時間利用可。'],
+      ['河北潟放水路', '石川県河北郡内灘町字大根布8字1番地先', '南岸', 36.66471, 136.64312, 2, 1, 0, 1, '有', '無', '無', '0:00〜23:59', '24時間利用可。冬期閉鎖（12月～2月）。'],
+      ['内灘海水浴場', '石川県河北郡内灘町字千鳥台4丁目153番地先', '入口横', 36.64045, 136.62397, 4, 3, 1, 1, '有', '無', '無', '7:00〜18:00', '冬期閉鎖（12月～2月）'],
+      ['道の駅内灘サンセットパーク', '石川県河北郡内灘町字大学1丁目4番地1', '店舗横', 36.659151, 136.648919, 3, 2, 1, 1, '有', '無', '無', '0:00〜23:59', '24時間利用可。']
+    ];
+
+    const toiletIcon = L.divIcon({
+      className:'', html:'<div class="toilet-pin">WC</div>',
+      iconSize:[28,28], iconAnchor:[14,14]
+    });
+
+    const toiletMarkers = toiletData.map(t => {
+      const [name, addr, place, lat, lng, male, female, unisex,
+             barrier, wheel, infant, ostomate, hours, note] = t;
+      const popup = `
+        <b>${name}</b><br>
+        ${addr}<br>
+        設置位置：${place}<br>
+        男性：${male}台／女性：${female}台／男女共用：${unisex}台<br>
+        バリアフリートイレ：${barrier}台<br>
+        車椅子使用者用：${wheel}／乳幼児用：${infant}／オストメイト：${ostomate}<br>
+        利用時間：${hours}<br>
+        ${note}`;
+      return L.marker([lat, lng], {icon: toiletIcon}).bindPopup(popup);
+    });
+
+    const toilets = L.layerGroup(toiletMarkers).addTo(map);
+
+    L.control.layers(
+      {'基本マップ（OSM）': osm},
+      {'表示アイテム': features, '公衆トイレ': toilets}
+    ).addTo(map);
+
+    station.openPopup();
+  </script>
+</body>
+</html>
